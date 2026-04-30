@@ -13,3 +13,5 @@ This project includes basic to intermediate concepts along with practical implem
 - DOM Manipulation
 
 This repository will be updated regularly as I continue learning and building new features.
+
+ https://anaacode.github.io/JavaScript_Trainning/
