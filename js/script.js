@@ -69,35 +69,106 @@
 // console.log(greet("Anamika"));
 
 
-const add = (a, b) => {
-  return a + b;
-};
-function addNormal(a, b) {
-  return a + b;
-}
+// const add = (a, b) => {
+//   return a + b;
+// };
+// function addNormal(a, b) {
+//   return a + b;
+// }
 
 
-const add2 = (a, b) => a + b;
+// const add2 = (a, b) => a + b;
 
-function add2Normal(a, b) {
-  return a + b;
-}
+// function add2Normal(a, b) {
+//   return a + b;
+// }
 
 
-const square = x => x * x;
-function squareNormal(x) {
-  return x * x;
-}
+// const square = x => x * x;
+// function squareNormal(x) {
+//   return x * x;
+// }
 
-const greet = () => "Hello!";
+// const greet = () => "Hello!";
 
-console.log(add(2, 3));
-console.log(addNormal(2, 3));
-console.log(add2(4,5));
-console.log(add2Normal(4,5));
-console.log(squareNormal(5));
+// console.log(add(2, 3));
+// console.log(addNormal(2, 3));
+// console.log(add2(4,5));
+// console.log(add2Normal(4,5));
+// console.log(squareNormal(5));
 
-console.log(square(4));
-console.log(greet());
+// console.log(square(4));
+// console.log(greet());
+
+
+const user = { name: "Priya", age: 24, "favourite color": "blue" };
+// console.log(user.name);              
+// console.log(user.age);               
+
+// const field = "name";
+// console.log(user[field]);           
+
+
+// console.log(user["favourite color"]); 
+
+
+// console.log(user.email);           
+
+
+
+// const u = { a: 1, b: 2 };
+// const { a, b } = u;
+// console.log(a, b);
+// const { phone = "N/A" } = u;
+// console.log(phone);
+
+
+// const user={name:"Anaya",age:21,city:"Jaiput";
+// }
+
+// const bankAccount = {
+//   holder: "Aarav",
+//   balance: 5000,
+
+//   deposit(amount) {
+//     this.balance += amount;
+//     return this.balance;
+//   },
+
+//   withdraw(amount) {
+//     if (amount > this.balance) {
+//       return "Insufficient funds";
+//     }
+
+//     this.balance -= amount;
+//     return this.balance;
+//   }
+// };
+
+// console.log(bankAccount.deposit(1000));
+// console.log(bankAccount.withdraw(2000));
+// console.log(bankAccount.withdraw(10000));
+
+
+// const address1 = `MI Road
+// Jaipur 302001
+// Rajasthan`;
+
+// const address2 = "MI Road Jaipur 302001 Rajasthan";
+
+// const address3 = `MI Road\nJaipur 302001\nRajasthan`;
+// console.log(address1);
+// console.log(address2);
+// console.log(address3);
+
+
+const showInfo = ({ name = "Guest", role = "User" } = {}) =>
+  `${role}: ${name}`;
+console.log(showInfo());               
+console.log(showInfo({ name: "Riya" })); 
+console.log(showInfo({ role: "Admin" }));
+console.log(showInfo({ name: "ABC", role: "Manager" }));
+
+
 
 
