@@ -2,85 +2,80 @@
 // console.log(10 - 3);
 // console.log(10 * 3);
 // console.log(10 / 3);
-// console.log(10 % 3);
+// console.log(10 %3 );
 // console.log(2 ** 8);
-
-// let x = 10;
+// let x=4;
 // console.log(x++);
-// console.log(x);
+// console.log(x--);
+// let x=12;
+// console.log(x+=5);
+// x=10;
+// console.log(x-=3);
+// x=10;
+// console.log(x*=2);
+// x=10;
+// console.log(x/=4);
 
 
 
-// let x = 10;
 
-// console.log(x += 5);
-// console.log(x -= 3);
-// console.log(x *= 2);
-// console.log(x /= 4);
 
-// const x = 5;
-// const y = "5"
-// console.log(x == y);
+
+
+// const x=5;
+// const y="5"
+// console.log(x==y);
 // console.log(x === y);
-
-// const a = 0;
-// const b = false;
-// console.log(a == b);
-// console.log(a === b);
-
-// const c = null;
-// let d;
-// console.log(c == d);
-
-// const firstValue = true;
-// const secondValue = false;
-
-// console.log(firstValue && secondValue); 
-
-// const firstOperand = 5;
-// const secondOperand = 2;
-// const thirdOperand = 10;
-// const fourthOperand = 20;
-
-// console.log(firstOperand > secondOperand && thirdOperand < fourthOperand); 
-
-// const boolValue = true;
-// console.log(!boolValue);
+// console.log(0 == false);
+// console.log(0 === false);
+// console.log(null == undefined);
+ 
 
 
-// const age = 24;
-// const status = age >= 18 ? "adult" : "minor"; 
+
+// const op1=true;
+// const op2=false;
+// const x=5, y=2, a=10, b=20;
+// console.log(x > y && a < b);
+// console.log(!op1);
+
+// let count=0;
+// console.log(count ?? 10);
+// console.log(count || 10);
+
+
+
+// const age= 23;
+// const status= age >= 18 ? "Adult" : "Minor";
+// const status2= age <= 18 ? "Adult" : "Minor"; //op=Minor
 // console.log(status);
+// console.log(status2);
 
-// const score = 70
-// const result = score >= 50 ? "pass" : "fail";
+// const score=79;
+// const result= score >= 50 ? "Pass" : "Fail";
+// const resultNext= score <= 50 ? "Pass" : "Fail"; //op=Fail
 // console.log(result);
+// console.log(resultNext);
 
-const order = {
+const customerOrder = {
   id: 123,
-  customer: {
-    name: "Alice",
+  customerDetails: {
+    customerName: "Alice",
     address: {
       city: "New York"
     }
   }
 };
+
+console.log(customerOrder ?.customerDetails ?.city);
+console.log(customerOrder ?.customerDetails ?.phone ?.number);
+console.log(order?.shipping?.address?.street); 
+
+const result = customerOrder?.customerDetails?.getName?.(); 
  
-
-console.log(order?.customer?.address?.city);    
-console.log(order?.customer?.phone?.number);     
-console.log(order?.shipping?.address?.street);   
- 
-
-const result = order?.customer?.getName?.();     
-
 const userAge = 0;
 const ageToShow = userAge ?? "Not provided";  
-const ageWithOr = userAge || "Not provided";  
-
-console.log(ageToShow);
-console.log(ageWithOr);
- 
+const ageWithOr = userAge || "Not provided";
 
 const config = {
   retryCount: 0,      
@@ -89,11 +84,17 @@ const config = {
 };
  
 const retries = config.retryCount ?? 3;      
-const timeout = config.timeout ?? 5000;      
+const timeout = config.timeout ?? 5000;     
 const logging = config.enableLogging ?? true; 
 
-console.log(retries);
-console.log(timeout);
-console.log(logging);
+ 
+
+
+
+
+
+
+
+
 
 
