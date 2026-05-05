@@ -14,4 +14,4 @@ This project includes basic to intermediate concepts along with practical implem
 
 This repository will be updated regularly as I continue learning and building new features.
 
- https://anaacode.github.io/JavaScript_Trainning/
+🌐 Live Demo You can view the project live here: https://github.com/anaaCode/JavaScript_Trainning.git
