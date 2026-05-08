@@ -1,4 +1,4 @@
-// console.log("welcome");
+ // console.log("welcome");
 // marks = 95
 // if (marks >= 90) console.log("Grade A");
 // else if (marks >= 75) console.log("Grade B");
@@ -69,35 +69,124 @@
 // console.log(greet("Anamika"));
 
 
-const add = (a, b) => {
-  return a + b;
-};
-function addNormal(a, b) {
+// const add = (a, b) => {
+//   return a + b;
+// };
+// function addNormal(a, b) {
+//   return a + b;
+// }
+
+
+// const add2 = (a, b) => a + b;
+
+// function add2Normal(a, b) {
+//   return a + b;
+// }
+
+
+// const square = x => x * x;
+// function squareNormal(x) {
+//   return x * x;
+// }
+
+// const greet = () => "Hello!";
+
+// console.log(add(2, 3));
+// console.log(addNormal(2, 3));
+// console.log(add2(4,5));
+// console.log(add2Normal(4,5));
+// console.log(squareNormal(5));
+
+// console.log(square(4));
+// console.log(greet());
+
+//----------------------Day10---------------------------
+// const title = document.querySelector("#title");
+
+// // Change text
+// title.textContent = "Hello, Anamika!";
+
+// // Change text color
+// title.style.color = "crimson";
+
+// // Bonus: change font family
+// title.style.fontFamily = "Georgia, serif";
+
+// // Grab the button
+// const themeBtn = document.querySelector("#theme-btn");
+
+// // Toggle dark class
+// document.body.classList.toggle("dark");
+
+// // Toggle again
+// document.body.classList.toggle("dark");
+
+// // Check if dark class exists
+// console.log(document.body.classList.contains("dark"));
+
+
+
+//------------------day12---------------------
+// function tryCatchExample() {
+
+//   try {
+//     const data = JSON.parse('{"name":"Priya"');
+
+//     console.log(data);
+//   } catch (err) {
+
+//     console.log("Couldn't parse:", err.message);
+//   }
+
+//   console.log("App keeps running");
+// }
+
+// tryCatchExample();
+
+
+
+// function divide(a, b) {
+//   if (typeof a !== "number" || typeof b !== "number") {
+//     throw new Error("Both arguments must be numbers");
+//   }
+//   if (b === 0) {
+//     throw new Error("Cannot divide by zero");
+//   }
+//   return a / b;
+// }
+
+// try {
+  
+//   console.log(divide(10, 2));
+//   console.log(divide(10,0));
+//   console.log(divide("Welcome", "Home"));  
+  
+   
+// } catch (err) {
+//   console.log("Caught:", err.message);
+// }
+
+
+export const PI = 3.14;
+
+export function add(a, b) {
   return a + b;
 }
 
-
-const add2 = (a, b) => a + b;
-
-function add2Normal(a, b) {
-  return a + b;
+export function subtract(a, b) {
+  return a - b;
 }
 
-
-const square = x => x * x;
-function squareNormal(x) {
-  return x * x;
+// Or export at the bottom
+function multiply(a, b) {
+  return a * b;
 }
 
-const greet = () => "Hello!";
+function divide(a,b){
+  return a /b;
+}
 
-console.log(add(2, 3));
-console.log(addNormal(2, 3));
-console.log(add2(4,5));
-console.log(add2Normal(4,5));
-console.log(squareNormal(5));
+export {multiply};
 
-console.log(square(4));
-console.log(greet());
-
-
+export default divide;
+ 

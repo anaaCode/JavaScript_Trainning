@@ -4,8 +4,64 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+    .done {
+      text-decoration: line-through;
+      opacity: 0.5;
+    }
+  </style>
 </head>
 <body>
-    <script src="js/script.js"></script>
+
+<div>
+    <h1 id="title">JS Training</h1>
+<button id="theme-btn">Toggle Theme</button>
+<ul id="names-list"></ul>
+<button id="add-name">Add Name</button>
+<div id="cards"></div>
+
+ <button id="counter-btn">Click me</button>
+
+  <p>Clicks: <span id="count">0</span></p>
+
+
+  <input id="live-input" placeholder="Type something..." />
+
+  <p id="preview"></p>
+
+
+  <form id="reg-form">
+    <input id="name-field" placeholder="Your name" />
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <p id="welcome"></p>
+
+
+  <ul id="todo-list">
+    <li>Buy milk</li>
+    <li>Walk dog</li>
+    <li>Pay bills</li>
+  </ul>
+
+<style>
+  .dark { background: #111; color: #eee; }
+  .name-item { padding: 4px 8px; }
+</style>
+
+
+ <p id="message">Original Text</p>
+
+  <ul id="item-list">
+    <li>Item 1</li>
+    <li>Item 2</li>
+    <li>Item 3</li>
+    <li>Item 4</li>
+    <li>Item 5</li>
+  </ul>
+
+  <div id="products"></div>
+<script type="module" src="./js/classwork/app.js"></script>
 </body>
 </html>
