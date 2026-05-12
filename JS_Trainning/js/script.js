@@ -167,26 +167,130 @@
 // }
 
 
-export const PI = 3.14;
+// export const PI = 3.14;
 
-export function add(a, b) {
-  return a + b;
-}
+// export function add(a, b) {
+//   return a + b;
+// }
 
-export function subtract(a, b) {
-  return a - b;
-}
+// export function subtract(a, b) {
+//   return a - b;
+// }
 
-// Or export at the bottom
-function multiply(a, b) {
-  return a * b;
-}
+// // Or export at the bottom
+// function multiply(a, b) {
+//   return a * b;
+// }
 
-function divide(a,b){
-  return a /b;
-}
+// function divide(a,b){
+//   return a /b;
+// }
 
-export {multiply};
+// export {multiply};
 
-export default divide;
+// export default divide;
  
+
+// console.log(a);       
+// var a = 1;
+
+// console.log
+// let b = 2;
+
+// console.log(c);      
+// const c = 3;      
+
+// greet();             
+// function greet() { console.log("Hi"); }
+
+// var score = 90;
+// let level = 5;
+// {
+//   console.log(mark);
+//   let mark = 87;
+//   console.log(mark);
+//}
+
+// const item = "Laptop";
+// const price = 60000;
+// const tax = 0.18;
+
+// const sentence = `The ${item} costs ₹${price} + ₹${price * tax} GST = ₹${price + (price * tax)}.`;
+
+// console.log(sentence);
+
+
+
+
+
+
+
+
+
+
+
+
+//---------------Counter private stat-------------------------
+function makeCounter() {
+  let count = 0;                      
+  return function () {
+  count++;                          
+  return count;
+};
+}
+const c = makeCounter();
+console.log(c());     
+console.log(c());     
+console.log(c());     
+//console.log(count)
+
+//-----------------Private variables--------------------------------
+function createAccount(initial) {
+let balance = initial;              
+return {
+  deposit:    (amt) => balance += amt,
+  withdraw:   (amt) => balance -= amt,
+  getBalance: ()    => balance,
+  };
+}
+const acc = createAccount(1000);
+acc.deposit(500);
+console.log(acc.getBalance());   
+acc.balance;
+
+
+//---------------------Memoization------------------------
+function memoize(fn) {
+const cache = {};                   
+return function (n) {
+if (n in cache) return cache[n];
+cache[n] = fn(n);                 
+return cache[n];
+};
+}
+  
+
+const slowSquare = (n) => { console.log("computing..."); return n * n; };
+const fastSquare = memoize(slowSquare);
+fastSquare(5);   
+fastSquare(5); 
+
+
+(function () {
+const secret = "hidden";            
+console.log("IIFE ran");
+})();
+// // IIFE with parameters
+// →
+// var → logs?
+// Immediately Invoked Function Expression
+// Basic IIFE — runs once, creates a private scope
+// not visible outside
+(function (city) {
+console.log(`Greetings from ${city}`);
+})("Jaipur");
+// Arrow IIFE (modern)
+(() => {
+const x = 42;
+console.log(x);
+})();
