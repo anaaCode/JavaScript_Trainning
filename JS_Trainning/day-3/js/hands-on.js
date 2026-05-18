@@ -1,62 +1,58 @@
-// Task 1 
+//---------------------------------Task-1------------------------------------
+
 const a = 17;
 const b = 5;
 
-const firstResult = a + b;
-const secondResult = a - b;
-const thirdResult = a * b;
-const fourthResult = a / b;
-const fifthResult = a % b;
-const sixthResult = a ** b;
+console.log(a + b); // 22
+console.log(a - b); // 12
+console.log(a * b); // 85
+console.log(a / b); // 3.4
+console.log(a % b); // 2
+console.log(a ** b); // 1419857
 
-const evenOrOdd = (42 % 2 === 0 ? "even" : "odd");
+const numCheck=42;
+console.log(numCheck % 2 === 0 ? "even" : "odd"); // even
 
-console.log(firstResult);
-console.log(secondResult);
-console.log(thirdResult);
-console.log(fourthResult);
-console.log(fifthResult);
-console.log(sixthResult);
-console.log(evenOrOdd);
+//---------------------------------Task-2--------------------------------------
 
-// Task 2
+console.log(5 == "5");   // true 
+console.log(5 === "5");  // false 
 
-console.log(5 == "5"); // true
-console.log(5 === "5"); // false
-console.log(0 == false); // true
+console.log(0 == false);  // true
 console.log(0 === false); // false
-console.log(null == undefined); // true
-// === is preferred because it checks both value and type 
 
-// Task 3
+console.log(null == undefined);  // true
+console.log(null === undefined); // false
+
+
+//== converts both values to the same type before comparing (loose)
+//=== checks both value AND type without conversion (strict)
+
+//----------------------------------Task-3----------------------------------------
+
+
 const age = 19;
-let hasLicense = true;
+const hasLicense = true;
 const hasCar = false;
+console.log(age >= 18 && hasLicense); // true
+console.log(hasLicense || hasCar); // true
+// const hasLicense = false;
+console.log(age >= 18 && hasLicense); // false 
+console.log(hasLicense || hasCar);    // false 
 
-const canDrive = age >= 18 && hasLicense;
-const canTravel = hasLicense || hasCar;
 
-console.log("canDrive: ", canDrive);
-console.log("canTravel: ", canTravel);
+//------------------------------------Bonus Task-------------------------------------
 
-hasLicense = false;
+const mood = "adult";
 
-const canDriveAfterFlip = age >= 18 && hasLicense;
-const canTravelAfterFlip = hasLicense || hasCar;
+console.log(mood === "adult" ? "adult" : "minor"); // adult
 
-console.log("canDriveAfterFlip: ",canDriveAfterFlip);
-console.log("canTravelAfterFlip: ",canTravelAfterFlip);
+const username = null;
 
-//bonus Task
-
-const mood = age >= 18 ? "adult" : "minor";
-console.log(mood);
-
-let username = null;
 const display = username ?? "Guest";
-console.log(display);
+console.log(display); // Guest
 
 const display2 = username || "Guest";
-console.log(display2);
+console.log(display2); // Guest
 
-// ?? only falls back for null or undefined, while || falls back for any falsy value 
+//??  use default only if value is null or undefined or || [] use default if value is any falsy (0, false, "", null, undefined)

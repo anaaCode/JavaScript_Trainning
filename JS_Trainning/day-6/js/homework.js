@@ -1,23 +1,23 @@
-function kmToMiles(km) {
-  return km * 0.621;
-}
+//---------------------Practice Task------------------
+//--------------------Task-1------------------
+const kmToMiles = km => km * 0.621;
 
-console.log(kmToMiles(10)); 
+console.log(kmToMiles(10));
+console.log(kmToMiles(50));
 
-function gstAmount(price, rate = 18) {
-  return (price * rate) / 100;
-}
+//--------------------Task-2------------------
+const gstAmount = (price, rate = 18) => (price * rate) / 100;
 
-console.log(gstAmount(1000));    
+console.log(gstAmount(1000));
+console.log(gstAmount(500, 5));
 
-function fullName(first, last) {
-  return `${first} ${last}`;
-}
+//--------------------Task-3------------------
+const fullName = (first, last) => `${first} ${last}`;
+console.log(fullName("Anamika", "Sharma"));
+console.log(fullName("Akanksha", "Sharma"));
 
-console.log(fullName("Gokul", "Krishna"));
+//--------------------Task-4------------------
+const isAdult = age => age >= 18;
 
-function isAdult(age) {
-  return age >= 18;
-}
-
-console.log(isAdult(20)); 
+console.log(isAdult(20));
+console.log(isAdult(15));

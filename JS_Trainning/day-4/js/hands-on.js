@@ -24,7 +24,7 @@ printGrade(95);
 printGrade(50);
 
 //task2
-day = "Wednesday";
+const day = "Wednesday";
 
 switch (day) {
   case "Monday":

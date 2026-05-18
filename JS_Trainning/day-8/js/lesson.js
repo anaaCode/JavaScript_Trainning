@@ -1,4 +1,4 @@
-// Day 8 - Objects: Code Snippets
+document.addEventListener("DOMContentLoaded", function () {
 
 const topic1Snippet = `let person = {
   name: "Aarav",
@@ -35,34 +35,17 @@ const topic3Snippet = `let calculator = {
 console.log(calculator.add());      // 15
 console.log(calculator.multiply()); // 50`;
 
-// Inject snippets into HTML
 document.querySelector("#topic1Code code").textContent = topic1Snippet;
 document.querySelector("#topic2Code code").textContent = topic2Snippet;
 document.querySelector("#topic3Code code").textContent = topic3Snippet;
 
-// Run demonstrations
 console.log("=== Day 8: Objects ===");
-
-const u = { name: "Priya" };
-console.log(u.name);
-
-const f = "name";
-console.log(u[f]);
-
-const user = { name: "Riya", age: 23, city: "Jaipur", email: "r@x.in" };
+const user = { name: "Riya", age: 23, city: "Jaipur" };
+console.log(user.name);
 const { name, age } = user;
 console.log(name, age);
+console.log(Object.keys(user));
+console.log(Object.values(user));
+console.log(Object.entries(user));
 
-const { name: userName, city } = user;
-console.log(userName, city);
-
-const { phone = "N/A" } = user;
-console.log(phone);
-
-const greet = ({ name, age }) => `Hi ${name}, age ${age}`;
-console.log(greet(user));
-
-const user1 = { name: "Anaya", age: 21, city: "Jaipur" };
-console.log(Object.keys(user1));
-console.log(Object.values(user1));
-console.log(Object.entries(user1));
+});
