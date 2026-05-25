@@ -3,15 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Day 13: Hoisting & TDZ — Lesson | JS Training</title>
+    <title>Day 17: Classes &amp; OOP — Lesson | JS Training</title>
     <link rel="stylesheet" href="../../shared/css/style.css">
+    <script src="../../shared/js/theme.js" defer></script>
 </head>
-
 <body>
     <div class="page-shell">
-                <header class="site-header">
-            <h1>Day 13: Hoisting & TDZ</h1>
+        <header class="site-header">
+            <h1>Day 17: Classes &amp; OOP</h1>
             <p class="subtitle">// lesson</p>
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+                <span class="icon-dark">🌙</span>
+                <span class="icon-light">☀️</span>
+                <span class="toggle-label">Light</span>
+            </button>
         </header>
 
         <main class="site-content">
@@ -21,149 +26,261 @@
                 <a href="homework.html">📝 Homework</a>
             </div>
             <article>
-                <h2>Hoisting & Temporal Dead Zone</h2>
-                <p>Understanding how JavaScript hoists declarations and the Temporal Dead Zone concept.</p>
-                
+                <h2>Classes &amp; OOP</h2>
+                <p>ES6 class syntax is syntactic sugar over prototypes — same engine underneath, cleaner surface.</p>
+
                 <section>
-                    <h3>Hoisting with var</h3>
-                    <div id="topic1Code">
-                        <pre><code></code></pre>
-                    </div>
+                    <h3>Topic 1: Class Syntax Basics</h3>
+                    <p>A <code>class</code> block groups a constructor and methods. The constructor runs when you call <code>new</code>; methods live on the prototype and are shared across all instances.</p>
+                    <pre><code>class User {
+  constructor(name, city) {
+    this.name = name;   // own property — unique to each instance
+    this.city = city;
+  }
+
+  greet() {  // lives on User.prototype — shared
+    console.log(`Hi, I'm ${this.name} from ${this.city}`);
+  }
+}
+
+const a = new User("Priya", "Jaipur");
+const b = new User("Aarav", "Mumbai");
+
+a.greet();  // "Hi, I'm Priya from Jaipur"
+b.greet();  // "Hi, I'm Aarav from Mumbai"
+
+console.log(typeof User);          // "function" — classes ARE functions
+console.log(a.greet === b.greet);  // true — same function on the prototype</code></pre>
                 </section>
 
                 <section>
-                    <h3>Hoisting with let and const</h3>
-                    <div id="topic2Code">
-                        <pre><code></code></pre>
-                    </div>
+                    <h3>Topic 2: Getters and Setters</h3>
+                    <p>Getters and setters look like property accesses but run code. Use them to derive values or validate on write.</p>
+                    <pre><code>class Product {
+  constructor(name, priceInPaise) {
+    this.name = name;
+    this._priceInPaise = priceInPaise;  // _ = "internal, please don't touch"
+  }
+
+  get priceInRupees() {              // called as p.priceInRupees (no parentheses)
+    return this._priceInPaise / 100;
+  }
+
+  set priceInRupees(rupees) {        // called as p.priceInRupees = 50
+    if (rupees &lt; 0) throw new Error("Price cannot be negative");
+    this._priceInPaise = rupees * 100;
+  }
+
+  get priceWithGST() {               // derived — no backing storage
+    return this.priceInRupees * 1.18;
+  }
+}
+
+const p = new Product("Notebook", 5000);  // ₹50
+console.log(p.priceInRupees);   // 50
+console.log(p.priceWithGST);    // 59
+p.priceInRupees = 100;
+console.log(p.priceInRupees);   // 100</code></pre>
                 </section>
 
                 <section>
-                    <h3>Function Hoisting</h3>
-                    <div id="topic3Code">
-                        <pre><code></code></pre>
-                    </div>
+                    <h3>Topic 3: extends and super</h3>
+                    <p><code>extends</code> sets up the prototype chain. <code>super()</code> must be called before <code>this</code> in a child constructor — the parent has to initialise <code>this</code> first.</p>
+                    <pre><code>class Animal {
+  constructor(name) { this.name = name; }
+  speak() { console.log(`${this.name} makes a sound`); }
+}
+
+class Dog extends Animal {
+  constructor(name, breed) {
+    super(name);        // calls Animal's constructor — MUST come first
+    this.breed = breed;
+  }
+
+  speak() {             // override
+    super.speak();      // optionally call the parent version first
+    console.log(`${this.name} barks!`);
+  }
+}
+
+const d = new Dog("Bruno", "Labrador");
+d.speak();
+// "Bruno makes a sound"
+// "Bruno barks!"
+
+console.log(d instanceof Dog);     // true
+console.log(d instanceof Animal);  // true</code></pre>
+                </section>
+
+                <section>
+                    <h3>Topic 4: static Methods</h3>
+                    <p>Static methods belong to the class itself, not instances. Use them for utilities and factory patterns.</p>
+                    <pre><code>class MathUtils {
+  static gst(amount, rate = 18) {
+    return amount * (rate / 100);
+  }
+  static format(amount) {
+    return `₹${amount.toFixed(2)}`;
+  }
+}
+
+console.log(MathUtils.gst(1000));    // 180
+console.log(MathUtils.format(1180)); // "₹1180.00"
+
+// Factory pattern — static method that returns a new instance
+class User {
+  constructor(name) { this.name = name; }
+  static fromEmail(email) {
+    return new User(email.split("@")[0]);
+  }
+}
+
+const u = User.fromEmail("priya@example.com");
+console.log(u.name);  // "priya"</code></pre>
+                </section>
+
+                <section>
+                    <h3>Topic 5: Private Fields with #</h3>
+                    <p>Fields prefixed with <code>#</code> are enforced private by the language — accessing them from outside throws a <code>SyntaxError</code>.</p>
+                    <pre><code>class BankAccount {
+  #balance;
+  #transactions = [];
+
+  constructor(initial) { this.#balance = initial; }
+
+  deposit(amt) {
+    this.#balance += amt;
+    this.#transactions.push({ type: "deposit", amt });
+  }
+
+  withdraw(amt) {
+    if (amt &gt; this.#balance) throw new Error("Insufficient funds");
+    this.#balance -= amt;
+    this.#transactions.push({ type: "withdraw", amt });
+  }
+
+  get balance() { return this.#balance; }
+  get history() { return [...this.#transactions]; }
+}
+
+const acc = new BankAccount(1000);
+acc.deposit(500);
+acc.withdraw(200);
+console.log(acc.balance);   // 1300
+// console.log(acc.#balance); // SyntaxError — enforced by the language</code></pre>
+                </section>
+
+                <section>
+                    <h3>Topic 6: Custom Error Classes</h3>
+                    <p>Extend <code>Error</code> to create domain-specific error types you can distinguish with <code>instanceof</code>.</p>
+                    <pre><code>class AppError extends Error {
+  constructor(message, code) {
+    super(message);
+    this.name = this.constructor.name;
+    this.code = code;
+  }
+}
+
+class ValidationError extends AppError {
+  constructor(field, message) {
+    super(message, "VALIDATION_FAILED");
+    this.field = field;
+  }
+}
+
+function validateAge(age) {
+  if (age &lt; 0)   throw new ValidationError("age", "Must be non-negative");
+  if (age &gt; 150) throw new ValidationError("age", "Must be under 150");
+}
+
+try {
+  validateAge(-5);
+} catch (e) {
+  if (e instanceof ValidationError) {
+    console.log(`[${e.code}] ${e.field}: ${e.message}`);
+    // "[VALIDATION_FAILED] age: Must be non-negative"
+  }
+}</code></pre>
                 </section>
 
             </article>
         </main>
 
-                        <aside class="site-outline">
+        <aside class="site-outline">
             <h2>Curriculum</h2>
             <nav>
                 <ul>
                     <li><a href="../../index.html">Overview</a></li>
+                    <details><summary>Day 1: Basics</summary><ul><li><a href="../../day-1/html/lesson.html">Lesson</a></li><li><a href="../../day-1/html/hands-on.html">Hands-on</a></li><li><a href="../../day-1/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 2: Variables</summary><ul><li><a href="../../day-2/html/lesson.html">Lesson</a></li><li><a href="../../day-2/html/hands-on.html">Hands-on</a></li><li><a href="../../day-2/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 3: Operators</summary><ul><li><a href="../../day-3/html/lesson.html">Lesson</a></li><li><a href="../../day-3/html/hands-on.html">Hands-on</a></li><li><a href="../../day-3/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 4: Control Flow</summary><ul><li><a href="../../day-4/html/lesson.html">Lesson</a></li><li><a href="../../day-4/html/hands-on.html">Hands-on</a></li><li><a href="../../day-4/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 5: Loops</summary><ul><li><a href="../../day-5/html/lesson.html">Lesson</a></li><li><a href="../../day-5/html/hands-on.html">Hands-on</a></li><li><a href="../../day-5/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 6: Functions</summary><ul><li><a href="../../day-6/html/lesson.html">Lesson</a></li><li><a href="../../day-6/html/hands-on.html">Hands-on</a></li><li><a href="../../day-6/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 7: Arrays</summary><ul><li><a href="../../day-7/html/lesson.html">Lesson</a></li><li><a href="../../day-7/html/hands-on.html">Hands-on</a></li><li><a href="../../day-7/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 8: Objects</summary><ul><li><a href="../../day-8/html/lesson.html">Lesson</a></li><li><a href="../../day-8/html/hands-on.html">Hands-on</a></li><li><a href="../../day-8/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 9: Modern Syntax</summary><ul><li><a href="../../day-9/html/lesson.html">Lesson</a></li><li><a href="../../day-9/html/hands-on.html">Hands-on</a></li><li><a href="../../day-9/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 10: DOM Basics</summary><ul><li><a href="../../day-10/html/lesson.html">Lesson</a></li><li><a href="../../day-10/html/hands-on.html">Hands-on</a></li><li><a href="../../day-10/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 11: Events</summary><ul><li><a href="../../day-11/html/lesson.html">Lesson</a></li><li><a href="../../day-11/html/hands-on.html">Hands-on</a></li><li><a href="../../day-11/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 12: Error Handling</summary><ul><li><a href="../../day-12/html/lesson.html">Lesson</a></li><li><a href="../../day-12/html/hands-on.html">Hands-on</a></li><li><a href="../../day-12/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 13: Hoisting &amp; TDZ</summary><ul><li><a href="../../day-13/html/lesson.html">Lesson</a></li><li><a href="../../day-13/html/hands-on.html">Hands-on</a></li><li><a href="../../day-13/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 14: Scope &amp; Closures</summary><ul><li><a href="../../day-14/html/lesson.html">Lesson</a></li><li><a href="../../day-14/html/hands-on.html">Hands-on</a></li><li><a href="../../day-14/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 15: The this Keyword</summary><ul><li><a href="../../day-15/html/lesson.html">Lesson</a></li><li><a href="../../day-15/html/hands-on.html">Hands-on</a></li><li><a href="../../day-15/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 16: Prototypes &amp; the Prototype Chain</summary><ul><li><a href="../../day-16/html/lesson.html">Lesson</a></li><li><a href="../../day-16/html/hands-on.html">Hands-on</a></li><li><a href="../../day-16/html/homework.html">Homework</a></li></ul></details>
+                    <details open><summary>Day 17: Classes &amp; OOP</summary><ul><li><a href="lesson.html" aria-current="page">Lesson</a></li><li><a href="hands-on.html">Hands-on</a></li><li><a href="homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 18: Async: Callbacks &amp; Promises</summary><ul><li><a href="../../day-18/html/lesson.html">Lesson</a></li><li><a href="../../day-18/html/hands-on.html">Hands-on</a></li><li><a href="../../day-18/html/homework.html">Homework</a></li></ul></details>
                     <details>
-                        <summary>Day 1: Basics</summary>
+                        <summary>Day 19: Async / Await</summary>
                         <ul>
-                            <li><a href="../../day-1/html/lesson.html">Lesson</a></li>
-                            <li><a href="../../day-1/html/hands-on.html">Hands-on</a></li>
-                            <li><a href="../../day-1/html/homework.html">Homework</a></li>
+                            <li><a href="../../day-19/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-19/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-19/html/homework.html">Homework</a></li>
                         </ul>
                     </details>
                     <details>
-                        <summary>Day 2: Variables</summary>
+                        <summary>Day 20: The Event Loop</summary>
                         <ul>
-                            <li><a href="../../day-2/html/lesson.html">Lesson</a></li>
-                            <li><a href="../../day-2/html/hands-on.html">Hands-on</a></li>
-                            <li><a href="../../day-2/html/homework.html">Homework</a></li>
+                            <li><a href="../../day-20/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-20/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-20/html/homework.html">Homework</a></li>
                         </ul>
                     </details>
                     <details>
-                        <summary>Day 3: Operators</summary>
+                        <summary>Day 21: Advanced Array & Object Patterns</summary>
                         <ul>
-                            <li><a href="../../day-3/html/lesson.html">Lesson</a></li>
-                            <li><a href="../../day-3/html/hands-on.html">Hands-on</a></li>
-                            <li><a href="../../day-3/html/homework.html">Homework</a></li>
+                            <li><a href="../../day-21/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-21/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-21/html/homework.html">Homework</a></li>
                         </ul>
                     </details>
                     <details>
-                        <summary>Day 4: Control Flow</summary>
+                        <summary>Day 22: Map / Set / WeakMap / WeakSet</summary>
                         <ul>
-                            <li><a href="../../day-4/html/lesson.html">Lesson</a></li>
-                            <li><a href="../../day-4/html/hands-on.html">Hands-on</a></li>
-                            <li><a href="../../day-4/html/homework.html">Homework</a></li>
+                            <li><a href="../../day-22/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-22/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-22/html/homework.html">Homework</a></li>
                         </ul>
                     </details>
                     <details>
-                        <summary>Day 5: Loops</summary>
+                        <summary>Day 23: Iterators & Generators</summary>
                         <ul>
-                            <li><a href="../../day-5/html/lesson.html">Lesson</a></li>
-                            <li><a href="../../day-5/html/hands-on.html">Hands-on</a></li>
-                            <li><a href="../../day-5/html/homework.html">Homework</a></li>
+                            <li><a href="../../day-23/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-23/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-23/html/homework.html">Homework</a></li>
                         </ul>
                     </details>
                     <details>
-                        <summary>Day 6: Functions</summary>
+                        <summary>Day 24: ES Modules in Deptht</summary>
                         <ul>
-                            <li><a href="../../day-6/html/lesson.html">Lesson</a></li>
-                            <li><a href="../../day-6/html/hands-on.html">Hands-on</a></li>
-                            <li><a href="../../day-6/html/homework.html">Homework</a></li>
-                        </ul>
-                    </details>
-                    <details>
-                        <summary>Day 7: Arrays</summary>
-                        <ul>
-                            <li><a href="../../day-7/html/lesson.html">Lesson</a></li>
-                            <li><a href="../../day-7/html/hands-on.html">Hands-on</a></li>
-                            <li><a href="../../day-7/html/homework.html">Homework</a></li>
-                        </ul>
-                    </details>
-                    <details>
-                        <summary>Day 8: Objects</summary>
-                        <ul>
-                            <li><a href="../../day-8/html/lesson.html">Lesson</a></li>
-                            <li><a href="../../day-8/html/hands-on.html">Hands-on</a></li>
-                            <li><a href="../../day-8/html/homework.html">Homework</a></li>
-                        </ul>
-                    </details>
-                    <details>
-                        <summary>Day 9: Modern Syntax</summary>
-                        <ul>
-                            <li><a href="../../day-9/html/lesson.html">Lesson</a></li>
-                            <li><a href="../../day-9/html/hands-on.html">Hands-on</a></li>
-                            <li><a href="../../day-9/html/homework.html">Homework</a></li>
-                        </ul>
-                    </details>
-                    <details>
-                        <summary>Day 10: DOM Basics</summary>
-                        <ul>
-                            <li><a href="../../day-10/html/lesson.html">Lesson</a></li>
-                            <li><a href="../../day-10/html/hands-on.html">Hands-on</a></li>
-                            <li><a href="../../day-10/html/homework.html">Homework</a></li>
-                        </ul>
-                    </details>
-                    <details>
-                        <summary>Day 11: Events</summary>
-                        <ul>
-                            <li><a href="../../day-11/html/lesson.html">Lesson</a></li>
-                            <li><a href="../../day-11/html/hands-on.html">Hands-on</a></li>
-                            <li><a href="../../day-11/html/homework.html">Homework</a></li>
-                        </ul>
-                    </details>
-                    <details>
-                        <summary>Day 12: Error Handling</summary>
-                        <ul>
-                            <li><a href="../../day-12/html/lesson.html">Lesson</a></li>
-                            <li><a href="../../day-12/html/hands-on.html">Hands-on</a></li>
-                            <li><a href="../../day-12/html/homework.html">Homework</a></li>
-                        </ul>
-                    </details>
-                    <details open>
-                        <summary>Day 13: Hoisting &amp; TDZ</summary>
-                        <ul>
-                            <li><a href="lesson.html" aria-current="page">Lesson</a></li>
-                            <li><a href="hands-on.html">Hands-on</a></li>
-                            <li><a href="homework.html">Homework</a></li>
+                            <li><a href="../../day-24/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-24/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-24/html/homework.html">Homework</a></li>
                         </ul>
                     </details>
                 </ul>
             </nav>
         </aside>
+        <script src="../js/lesson.js"></script>
     </div>
-    <script src="../js/lesson.js"></script>
 </body>
 </html>
-
-
-
