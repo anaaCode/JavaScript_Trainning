@@ -70,3 +70,4 @@ const step2 = updateField(step1, "city", "Mumbai");
 
 console.log(step2); // { name: "Priya", age: 26, city: "Mumbai" }
 console.log(user2); // { name: "Priya", age: 25, city: "Jaipur" } — untouched
+
