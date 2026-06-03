@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day 27: Performance &amp; Best Practices — Lesson | JS Training</title>
+    <link rel="stylesheet" href="../../shared/css/style.css">
+    <script src="../../shared/js/theme.js" defer></script>
+</head>
+<body>
+    <div class="page-shell">
+        <header class="site-header">
+            <h1>Day 27: Performance &amp; Best Practices</h1>
+            <p class="subtitle">// lesson · ★ FINAL SESSION</p>
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+                <span class="icon-dark">🌙</span>
+                <span class="icon-light">☀️</span>
+                <span class="toggle-label">Light</span>
+            </button>
+        </header>
+
+        <main class="site-content">
+            <div class="page-nav">
+                <a href="lesson.html" class="active">📖 Lesson</a>
+                <a href="hands-on.html">⚡ Hands-on</a>
+                <a href="homework.html">📝 Homework</a>
+            </div>
+            <article>
+                <h2>Performance &amp; Best Practices</h2>
+                <p>The final session. You already know the language — today is about shipping code that stays fast, stays safe, and stays readable as it grows.</p>
+
+                <section>
+                    <h3>Topic 1: Debounce vs Throttle</h3>
+                    <p>High-frequency events like <code>input</code>, <code>scroll</code>, and <code>mousemove</code> can fire hundreds of times per second. Running expensive work on every event tanks performance. Two complementary tools tame them.</p>
+                    <table>
+                        <thead><tr><th>Tool</th><th>Behaviour</th><th>Best for</th></tr></thead>
+                        <tbody>
+                            <tr><td>Debounce</td><td>Wait until the user stops, fire <strong>once</strong></td><td>Search input, autosave, resize</td></tr>
+                            <tr><td>Throttle</td><td>Fire at most once per N ms</td><td>Scroll, mousemove, drag</td></tr>
+                        </tbody>
+                    </table>
+                    <pre><code>// DEBOUNCE — only fire after `delay` ms of silence
+function debounce(fn, delay) {
+  let timer;
+  return function (...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), delay);
+  };
+}
+
+// THROTTLE — fire at most once per `delay` ms
+function throttle(fn, delay) {
+  let lastCall = 0;
+  return function (...args) {
+    const now = Date.now();
+    if (now - lastCall &lt; delay) return;
+    lastCall = now;
+    fn.apply(this, args);
+  };
+}
+
+// Usage — search input debounced at 300 ms
+const handleSearch = debounce((q) => {
+  console.log("searching for:", q);
+}, 300);
+input.addEventListener("input", (e) => handleSearch(e.target.value));
+
+// Usage — scroll throttled to 100 ms
+const onScroll = throttle(() => {
+  console.log("scroll at", window.scrollY);
+}, 100);
+window.addEventListener("scroll", onScroll);</code></pre>
+                    <p><strong>Follow-along — predict the output:</strong></p>
+                    <pre><code>const log = debounce(() => console.log("fired"), 100);
+log(); log(); log();
+// wait 200 ms
+log();
+// → how many fires?</code></pre>
+                    <p>Answer: <strong>twice</strong> — once after the first burst settles, once after the final call.</p>
+                </section>
+
+                <section>
+                    <h3>Topic 2: Memory Leaks — The Big Four</h3>
+                    <pre><code>// 1. Forgotten globals
+function leaky() {
+  user = { name: "Priya" };       // no let/const → attaches to globalThis
+}
+// FIX: always use let/const. Use "use strict" or ES modules (strict by default).
+
+// 2. Forgotten timers / intervals
+const id = setInterval(() => doStuff(), 1000);
+// If the component owning this never calls clearInterval(id), it leaks.
+// FIX: always pair setInterval with clearInterval on cleanup.
+clearInterval(id);
+
+// 3. Detached DOM nodes held by event listeners
+const btn = document.querySelector("#save");
+btn.addEventListener("click", () => doSave());
+btn.remove();
+// btn is removed from the DOM but the listener still holds a JS reference.
+// FIX: removeEventListener before remove(), or use AbortController:
+const ctrl = new AbortController();
+btn.addEventListener("click", handler, { signal: ctrl.signal });
+ctrl.abort();   // cleans up the listener too
+
+// 4. Closures holding large data
+function makeHandler(largeData) {
+  return function () {
+    return largeData.length;          // closure keeps largeData alive forever
+  };
+}
+// FIX: extract only what you need.
+function makeHandler(largeData) {
+  const len = largeData.length;
+  return function () { return len; };
+}</code></pre>
+                </section>
+
+                <section>
+                    <h3>Topic 3: Garbage Collection</h3>
+                    <p>JS engines use <strong>tracing GC</strong> (mark-and-sweep). Starting from roots — globals, the call stack, active closures — the engine walks every reachable object. Anything unreachable is eligible for collection.</p>
+                    <p>Modern engines add <strong>generational GC</strong>: short-lived objects are collected in the fast <em>young generation</em>; long-lived objects graduate to the slower <em>old generation</em>. You control GC indirectly by controlling reachability — nullifying a reference (<code>myRef = null</code>) lets the engine collect that object when nothing else points to it.</p>
+                </section>
+
+                <section>
+                    <h3>Topic 4: Chrome DevTools Performance Tab</h3>
+                    <table>
+                        <thead><tr><th>Section</th><th>What it shows</th></tr></thead>
+                        <tbody>
+                            <tr><td>Frames</td><td>Each browser frame — target 60 fps (≤ 16.7 ms/frame)</td></tr>
+                            <tr><td>Main</td><td>Call stack over time — find slow functions and long tasks</td></tr>
+                            <tr><td>Network</td><td>Requests and their timing</td></tr>
+                            <tr><td>Memory</td><td>Heap size and GC pauses</td></tr>
+                        </tbody>
+                    </table>
+                    <p>Tag your own code with the <strong>User Timing API</strong> so your measurements appear in the timeline alongside browser events:</p>
+                    <pre><code>performance.mark("compute-start");
+expensiveComputation();
+performance.mark("compute-end");
+performance.measure("compute", "compute-start", "compute-end");
+// "compute" now appears as a band in the DevTools Performance recording.</code></pre>
+                </section>
+
+                <section>
+                    <h3>Topic 5: Security — XSS, eval, Sanitisation</h3>
+                    <pre><code>// 1. XSS via innerHTML — all-time #1 web vulnerability
+const userComment = '&lt;img src=x onerror="alert(\'pwned\')"&gt;';
+
+// UNSAFE — runs the attacker's onerror handler
+commentEl.innerHTML = userComment;
+
+// SAFE — treats it as plain text, no parsing
+commentEl.textContent = userComment;
+
+// If you MUST insert HTML, sanitise first (DOMPurify is the standard):
+commentEl.innerHTML = DOMPurify.sanitize(userComment);
+
+
+// 2. eval() and the Function constructor — never use with user input
+const userExpr = "alert('exploited')";
+// NEVER: eval(userExpr);
+// NEVER: new Function(userExpr)();
+// Both execute arbitrary code with full page privileges.
+
+
+// 3. Safe JSON parsing
+const safe = JSON.parse(serverJSON);   // ✅ safe — no code execution</code></pre>
+                    <p>⚠️ <strong>React note:</strong> React escapes <code>{'{value}'}</code> by default — safe. <code>dangerouslySetInnerHTML</code> bypasses that. The name is the warning. Always sanitise with DOMPurify before passing to it.</p>
+                </section>
+
+
+            </article>
+        </main>
+
+        <aside class="site-outline">
+            <h2>Curriculum</h2>
+            <nav>
+                <ul>
+                    <li><a href="../../index.html">Overview</a></li>
+                    <details><summary>Day 1: Basics</summary><ul><li><a href="../../day-1/html/lesson.html">Lesson</a></li><li><a href="../../day-1/html/hands-on.html">Hands-on</a></li><li><a href="../../day-1/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 2: Variables</summary><ul><li><a href="../../day-2/html/lesson.html">Lesson</a></li><li><a href="../../day-2/html/hands-on.html">Hands-on</a></li><li><a href="../../day-2/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 3: Operators</summary><ul><li><a href="../../day-3/html/lesson.html">Lesson</a></li><li><a href="../../day-3/html/hands-on.html">Hands-on</a></li><li><a href="../../day-3/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 4: Control Flow</summary><ul><li><a href="../../day-4/html/lesson.html">Lesson</a></li><li><a href="../../day-4/html/hands-on.html">Hands-on</a></li><li><a href="../../day-4/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 5: Loops</summary><ul><li><a href="../../day-5/html/lesson.html">Lesson</a></li><li><a href="../../day-5/html/hands-on.html">Hands-on</a></li><li><a href="../../day-5/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 6: Functions</summary><ul><li><a href="../../day-6/html/lesson.html">Lesson</a></li><li><a href="../../day-6/html/hands-on.html">Hands-on</a></li><li><a href="../../day-6/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 7: Arrays</summary><ul><li><a href="../../day-7/html/lesson.html">Lesson</a></li><li><a href="../../day-7/html/hands-on.html">Hands-on</a></li><li><a href="../../day-7/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 8: Objects</summary><ul><li><a href="../../day-8/html/lesson.html">Lesson</a></li><li><a href="../../day-8/html/hands-on.html">Hands-on</a></li><li><a href="../../day-8/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 9: Modern Syntax</summary><ul><li><a href="../../day-9/html/lesson.html">Lesson</a></li><li><a href="../../day-9/html/hands-on.html">Hands-on</a></li><li><a href="../../day-9/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 10: DOM Basics</summary><ul><li><a href="../../day-10/html/lesson.html">Lesson</a></li><li><a href="../../day-10/html/hands-on.html">Hands-on</a></li><li><a href="../../day-10/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 11: Events</summary><ul><li><a href="../../day-11/html/lesson.html">Lesson</a></li><li><a href="../../day-11/html/hands-on.html">Hands-on</a></li><li><a href="../../day-11/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 12: Error Handling</summary><ul><li><a href="../../day-12/html/lesson.html">Lesson</a></li><li><a href="../../day-12/html/hands-on.html">Hands-on</a></li><li><a href="../../day-12/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 13: Hoisting &amp; TDZ</summary><ul><li><a href="../../day-13/html/lesson.html">Lesson</a></li><li><a href="../../day-13/html/hands-on.html">Hands-on</a></li><li><a href="../../day-13/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 14: Scope &amp; Closures</summary><ul><li><a href="../../day-14/html/lesson.html">Lesson</a></li><li><a href="../../day-14/html/hands-on.html">Hands-on</a></li><li><a href="../../day-14/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 15: The this Keyword</summary><ul><li><a href="../../day-15/html/lesson.html">Lesson</a></li><li><a href="../../day-15/html/hands-on.html">Hands-on</a></li><li><a href="../../day-15/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 16: Prototypes &amp; the Prototype Chain</summary><ul><li><a href="../../day-16/html/lesson.html">Lesson</a></li><li><a href="../../day-16/html/hands-on.html">Hands-on</a></li><li><a href="../../day-16/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 17: Classes &amp; OOP</summary><ul><li><a href="../../day-17/html/lesson.html">Lesson</a></li><li><a href="../../day-17/html/hands-on.html">Hands-on</a></li><li><a href="../../day-17/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 18: Promises</summary><ul><li><a href="../../day-18/html/lesson.html">Lesson</a></li><li><a href="../../day-18/html/hands-on.html">Hands-on</a></li><li><a href="../../day-18/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 19: Async / Await</summary><ul><li><a href="../../day-19/html/lesson.html">Lesson</a></li><li><a href="../../day-19/html/hands-on.html">Hands-on</a></li><li><a href="../../day-19/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 20: The Event Loop</summary><ul><li><a href="../../day-20/html/lesson.html">Lesson</a></li><li><a href="../../day-20/html/hands-on.html">Hands-on</a></li><li><a href="../../day-20/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 21: Advanced Array &amp; Object Patterns</summary><ul><li><a href="../../day-21/html/lesson.html">Lesson</a></li><li><a href="../../day-21/html/hands-on.html">Hands-on</a></li><li><a href="../../day-21/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 22: Map / Set / WeakMap / WeakSet</summary><ul><li><a href="../../day-22/html/lesson.html">Lesson</a></li><li><a href="../../day-22/html/hands-on.html">Hands-on</a></li><li><a href="../../day-22/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 23: Iterators &amp; Generators</summary><ul><li><a href="../../day-23/html/lesson.html">Lesson</a></li><li><a href="../../day-23/html/hands-on.html">Hands-on</a></li><li><a href="../../day-23/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 24: ES Modules in Depth</summary><ul><li><a href="../../day-24/html/lesson.html">Lesson</a></li><li><a href="../../day-24/html/hands-on.html">Hands-on</a></li><li><a href="../../day-24/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 25: Functional Programming</summary><ul><li><a href="../../day-25/html/lesson.html">Lesson</a></li><li><a href="../../day-25/html/hands-on.html">Hands-on</a></li><li><a href="../../day-25/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 26: Design Patterns</summary><ul><li><a href="../../day-26/html/lesson.html">Lesson</a></li><li><a href="../../day-26/html/hands-on.html">Hands-on</a></li><li><a href="../../day-26/html/homework.html">Homework</a></li></ul></details>
+                    <details open>
+                        <summary>Day 27: Performance &amp; Best Practices ★</summary>
+                        <ul>
+                            <li><a href="lesson.html" aria-current="page">Lesson</a></li>
+                            <li><a href="hands-on.html">Hands-on</a></li>
+                            <li><a href="homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </ul>
+            </nav>
+        </aside>
+    </div>
+    <script src="../js/lesson.js" defer></script>
+</body>
+</html>

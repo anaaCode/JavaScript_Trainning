@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day 25: Functional Programming — Hands-On | JS Training</title>
+    <link rel="stylesheet" href="../../shared/css/style.css">
+    <script src="../../shared/js/theme.js" defer></script>
+</head>
+<body>
+    <div class="page-shell">
+        <header class="site-header">
+            <h1>Day 25: Functional Programming</h1>
+            <p class="subtitle">// hands-on</p>
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+                <span class="icon-dark">🌙</span>
+                <span class="icon-light">☀️</span>
+                <span class="toggle-label">Light</span>
+            </button>
+        </header>
+
+        <main class="site-content">
+            <div class="page-nav">
+                <a href="lesson.html">📖 Lesson</a>
+                <a href="hands-on.html" class="active">⚡ Hands-on</a>
+                <a href="homework.html">📝 Homework</a>
+            </div>
+            <article>
+                <h2>Hands-on Tasks</h2>
+                <p>Complete these tasks during class. Read each task fully before writing code. Open DevTools Console to see all output.</p>
+
+                <section>
+                    <h3>Task 1: Pure or Impure?</h3>
+                    <p><strong>What to do:</strong> classify each function below as pure or impure. For every impure one, explain exactly why.</p>
+                    <pre><code>// (1) (a, b) => a + b
+// (2) () => Date.now()
+// (3) (arr) => arr.sort()
+// (4) (arr) => [...arr].sort()
+// (5) (x) => { console.log(x); return x; }</code></pre>
+                    <pre id="task1-output" style="background:var(--bg-alt,#f5f5f5); border-radius:6px; padding:12px; font-size:13px; margin-top:8px; white-space:pre-wrap;"></pre>
+                </section>
+
+                <section>
+                    <h3>Task 2: pipe from Scratch</h3>
+                    <p><strong>What to do:</strong></p>
+                    <ul>
+                        <li>Implement <code>pipe(...fns)</code> that returns a function which runs its input through each <code>fn</code> left-to-right</li>
+                        <li>Create three small functions: <code>addOne</code>, <code>square</code>, <code>negate</code></li>
+                        <li>Pipe them together and test with input <code>5</code> — expect <code>-36</code></li>
+                    </ul>
+                    <pre><code>const pipe = (...fns) => (x) => fns.reduce((acc, fn) => fn(acc), x);
+
+const addOne = (x) => x + 1;
+const square = (x) => x * x;
+const negate = (x) => -x;
+
+const transform = pipe(addOne, square, negate);
+console.log(transform(5));   // -36
+// addOne(5) → 6 → square(6) → 36 → negate(36) → -36</code></pre>
+                    <pre id="task2-output" style="background:var(--bg-alt,#f5f5f5); border-radius:6px; padding:12px; font-size:13px; margin-top:8px; white-space:pre-wrap;"></pre>
+                </section>
+
+                <section>
+                    <h3>Task 3: Curry it</h3>
+                    <p><strong>What to do:</strong></p>
+                    <ul>
+                        <li>Write a curried <code>volume(l)(w)(h)</code> that returns <code>l * w * h</code></li>
+                        <li>Pre-apply with <code>l = 5</code> to get <code>lengthOf5</code></li>
+                        <li>Pre-apply with <code>w = 3</code> to get <code>lengthOf5width3</code></li>
+                        <li>Call with <code>h = 2</code> and verify the result is <code>30</code></li>
+                    </ul>
+                    <pre><code>const volume = (l) => (w) => (h) => l * w * h;
+
+const lengthOf5       = volume(5);
+const lengthOf5width3 = lengthOf5(3);
+console.log(lengthOf5width3(2));   // 30</code></pre>
+                    <pre id="task3-output" style="background:var(--bg-alt,#f5f5f5); border-radius:6px; padding:12px; font-size:13px; margin-top:8px; white-space:pre-wrap;"></pre>
+                </section>
+
+                <section>
+                    <h3>Bonus: Real Pipeline</h3>
+                    <p><strong>What to do:</strong> given the users array below, build a <code>pipe</code> pipeline using only small pure functions that:</p>
+                    <ul>
+                        <li>Filters out anyone under 18</li>
+                        <li>Capitalises names</li>
+                        <li>Sorts by age descending</li>
+                        <li>Returns just the names</li>
+                    </ul>
+                    <pre><code>const users = [
+  { name: "priya", age: 25 },
+  { name: "aarav", age: 17 },
+  { name: "riya",  age: 30 },
+];
+
+const filterAdults    = (arr) => arr.filter((u) => u.age >= 18);
+const capitaliseNames = (arr) => arr.map((u) => ({ ...u, name: u.name[0].toUpperCase() + u.name.slice(1) }));
+const sortByAgeDesc   = (arr) => [...arr].sort((a, b) => b.age - a.age);
+const toNames         = (arr) => arr.map((u) => u.name);
+
+const processUsers = pipe(filterAdults, capitaliseNames, sortByAgeDesc, toNames);
+console.log(processUsers(users));   // ["Riya", "Priya"]</code></pre>
+                    <pre id="bonus-output" style="background:var(--bg-alt,#f5f5f5); border-radius:6px; padding:12px; font-size:13px; margin-top:8px; white-space:pre-wrap;"></pre>
+                </section>
+
+            </article>
+        </main>
+
+        <aside class="site-outline">
+            <h2>Curriculum</h2>
+            <nav>
+                <ul>
+                    <li><a href="../../index.html">Overview</a></li>
+                    <details><summary>Day 1: Basics</summary><ul><li><a href="../../day-1/html/lesson.html">Lesson</a></li><li><a href="../../day-1/html/hands-on.html">Hands-on</a></li><li><a href="../../day-1/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 2: Variables</summary><ul><li><a href="../../day-2/html/lesson.html">Lesson</a></li><li><a href="../../day-2/html/hands-on.html">Hands-on</a></li><li><a href="../../day-2/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 3: Operators</summary><ul><li><a href="../../day-3/html/lesson.html">Lesson</a></li><li><a href="../../day-3/html/hands-on.html">Hands-on</a></li><li><a href="../../day-3/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 4: Control Flow</summary><ul><li><a href="../../day-4/html/lesson.html">Lesson</a></li><li><a href="../../day-4/html/hands-on.html">Hands-on</a></li><li><a href="../../day-4/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 5: Loops</summary><ul><li><a href="../../day-5/html/lesson.html">Lesson</a></li><li><a href="../../day-5/html/hands-on.html">Hands-on</a></li><li><a href="../../day-5/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 6: Functions</summary><ul><li><a href="../../day-6/html/lesson.html">Lesson</a></li><li><a href="../../day-6/html/hands-on.html">Hands-on</a></li><li><a href="../../day-6/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 7: Arrays</summary><ul><li><a href="../../day-7/html/lesson.html">Lesson</a></li><li><a href="../../day-7/html/hands-on.html">Hands-on</a></li><li><a href="../../day-7/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 8: Objects</summary><ul><li><a href="../../day-8/html/lesson.html">Lesson</a></li><li><a href="../../day-8/html/hands-on.html">Hands-on</a></li><li><a href="../../day-8/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 9: Modern Syntax</summary><ul><li><a href="../../day-9/html/lesson.html">Lesson</a></li><li><a href="../../day-9/html/hands-on.html">Hands-on</a></li><li><a href="../../day-9/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 10: DOM Basics</summary><ul><li><a href="../../day-10/html/lesson.html">Lesson</a></li><li><a href="../../day-10/html/hands-on.html">Hands-on</a></li><li><a href="../../day-10/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 11: Events</summary><ul><li><a href="../../day-11/html/lesson.html">Lesson</a></li><li><a href="../../day-11/html/hands-on.html">Hands-on</a></li><li><a href="../../day-11/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 12: Error Handling</summary><ul><li><a href="../../day-12/html/lesson.html">Lesson</a></li><li><a href="../../day-12/html/hands-on.html">Hands-on</a></li><li><a href="../../day-12/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 13: Hoisting &amp; TDZ</summary><ul><li><a href="../../day-13/html/lesson.html">Lesson</a></li><li><a href="../../day-13/html/hands-on.html">Hands-on</a></li><li><a href="../../day-13/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 14: Scope &amp; Closures</summary><ul><li><a href="../../day-14/html/lesson.html">Lesson</a></li><li><a href="../../day-14/html/hands-on.html">Hands-on</a></li><li><a href="../../day-14/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 15: The this Keyword</summary><ul><li><a href="../../day-15/html/lesson.html">Lesson</a></li><li><a href="../../day-15/html/hands-on.html">Hands-on</a></li><li><a href="../../day-15/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 16: Prototypes &amp; the Prototype Chain</summary><ul><li><a href="../../day-16/html/lesson.html">Lesson</a></li><li><a href="../../day-16/html/hands-on.html">Hands-on</a></li><li><a href="../../day-16/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 17: Classes &amp; OOP</summary><ul><li><a href="../../day-17/html/lesson.html">Lesson</a></li><li><a href="../../day-17/html/hands-on.html">Hands-on</a></li><li><a href="../../day-17/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 18: Promises</summary><ul><li><a href="../../day-18/html/lesson.html">Lesson</a></li><li><a href="../../day-18/html/hands-on.html">Hands-on</a></li><li><a href="../../day-18/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 19: Async / Await</summary><ul><li><a href="../../day-19/html/lesson.html">Lesson</a></li><li><a href="../../day-19/html/hands-on.html">Hands-on</a></li><li><a href="../../day-19/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 20: The Event Loop</summary><ul><li><a href="../../day-20/html/lesson.html">Lesson</a></li><li><a href="../../day-20/html/hands-on.html">Hands-on</a></li><li><a href="../../day-20/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 21: Advanced Array &amp; Object Patterns</summary><ul><li><a href="../../day-21/html/lesson.html">Lesson</a></li><li><a href="../../day-21/html/hands-on.html">Hands-on</a></li><li><a href="../../day-21/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 22: Map / Set / WeakMap / WeakSet</summary><ul><li><a href="../../day-22/html/lesson.html">Lesson</a></li><li><a href="../../day-22/html/hands-on.html">Hands-on</a></li><li><a href="../../day-22/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 23: Iterators &amp; Generators</summary><ul><li><a href="../../day-23/html/lesson.html">Lesson</a></li><li><a href="../../day-23/html/hands-on.html">Hands-on</a></li><li><a href="../../day-23/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 24: ES Modules in Depth</summary><ul><li><a href="../../day-24/html/lesson.html">Lesson</a></li><li><a href="../../day-24/html/hands-on.html">Hands-on</a></li><li><a href="../../day-24/html/homework.html">Homework</a></li></ul></details>
+                    <details open>
+                        <summary>Day 25: Functional Programming</summary>
+                        <ul>
+                            <li><a href="lesson.html">Lesson</a></li>
+                            <li><a href="hands-on.html" aria-current="page">Hands-on</a></li>
+                            <li><a href="homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                    <details><summary>Day 26: Design Patterns</summary>
+                        <ul>
+                            <li><a href="../../day-26/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-26/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-26/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary>Day 27: Performance & Best Practices</summary>
+                        <ul>
+                            <li><a href="../../day-27/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-27/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-27/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </ul>
+            </nav>
+        </aside>
+    </div>
+    <!-- type="module" enables ES import/export in the browser -->
+    <script type="module" src="../js/hands-on.js"></script>
+</body>
+</html>

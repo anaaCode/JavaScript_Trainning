@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day 24: ES Modules in Depth — Hands-On | JS Training</title>
+    <link rel="stylesheet" href="../../shared/css/style.css">
+    <script src="../../shared/js/theme.js" defer></script>
+</head>
+<body>
+    <div class="page-shell">
+        <header class="site-header">
+            <h1>Day 24: ES Modules in Depth</h1>
+            <p class="subtitle">// hands-on</p>
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+                <span class="icon-dark">🌙</span>
+                <span class="icon-light">☀️</span>
+                <span class="toggle-label">Light</span>
+            </button>
+        </header>
+
+        <main class="site-content">
+            <div class="page-nav">
+                <a href="lesson.html">📖 Lesson</a>
+                <a href="hands-on.html" class="active">⚡ Hands-on</a>
+                <a href="homework.html">📝 Homework</a>
+            </div>
+            <article>
+                <h2>Hands-on Tasks</h2>
+                <p>Complete these tasks during class. Read each task fully before writing code. Open DevTools Console to see all output.</p>
+
+                <section>
+                    <h3>Task 1: Multiple Named Exports + Barrel</h3>
+                    <p><strong>What to do:</strong></p>
+                    <ul>
+                        <li>Three files in <code>js/math/</code>: <code>add.js</code>, <code>multiply.js</code>, <code>divide.js</code> — each exports a named function</li>
+                        <li><code>js/math/index.js</code> is the barrel — it re-exports all three</li>
+                        <li><code>hands-on.js</code> imports all three from <code>"./math/index.js"</code> in a single line</li>
+                    </ul>
+                    <pre><code>// math/add.js
+export function add(a, b) { return a + b; }
+
+// math/multiply.js
+export function multiply(a, b) { return a * b; }
+
+// math/divide.js
+export function divide(a, b) {
+  if (b === 0) throw new Error("Cannot divide by zero");
+  return a / b;
+}
+
+// math/index.js — barrel
+export { add }      from "./add.js";
+export { multiply } from "./multiply.js";
+export { divide }   from "./divide.js";
+
+// hands-on.js — single clean import
+import { add, multiply, divide } from "./math/index.js";
+console.log(add(3, 4));       // 7
+console.log(multiply(3, 4));  // 12
+console.log(divide(10, 2));   // 5</code></pre>
+                    <p style="font-size:13px;color:#555;">Check the Console — you should see 7, 12, 5 logged from the barrel import.</p>
+                </section>
+
+                <section>
+                    <h3>Task 2: Default + Named in the Same Import Statement</h3>
+                    <p><strong>What to do:</strong></p>
+                    <ul>
+                        <li><code>Button.js</code> has a <strong>default export</strong> <code>function Button({label, onClick})</code> that creates a DOM button</li>
+                        <li>It also has a <strong>named export</strong> <code>const ButtonStyles = { ... }</code></li>
+                        <li>Import both in one statement: <code>import Button, &#123; ButtonStyles &#125; from "./Button.js"</code></li>
+                    </ul>
+                    <pre><code>// Button.js
+export default function Button({ label, onClick }) { /* creates &lt;button&gt; */ }
+export const ButtonStyles = { padding: "10px 20px", backgroundColor: "#1976D2", ... };
+
+// hands-on.js
+import Button, { ButtonStyles } from "./Button.js";
+console.log(ButtonStyles);   // { padding: "10px 20px", ... }
+// Renders a real button into #task2-output</code></pre>
+                    <div id="task2-output" style="padding:16px; background:var(--bg-alt,#f5f5f5); border-radius:6px; margin-top:8px; min-height:48px;">
+                        <!-- Button rendered here by hands-on.js -->
+                    </div>
+                </section>
+
+                <section>
+                    <h3>Task 3: Dynamic import()</h3>
+                    <p><strong>What to do:</strong></p>
+                    <ul>
+                        <li><code>heavy.js</code> exports <code>compute()</code> returning <code>"computed!"</code></li>
+                        <li><code>loadAndRun()</code> uses <code>await import("./heavy.js")</code> to load it on demand</li>
+                        <li>Click the button below — watch the Console: <code>heavy.js</code> logs its evaluation message only <em>after</em> the click</li>
+                    </ul>
+                    <pre><code>// heavy.js
+export function compute() { return "computed!"; }
+
+// hands-on.js
+async function loadAndRun() {
+  const mod = await import("./heavy.js");   // fetched only now
+  console.log(mod.compute());               // "computed!"
+}
+
+// Button click triggers the dynamic import
+button.addEventListener("click", async () => {
+  const { compute } = await import("./heavy.js");
+  output.textContent = compute();
+});</code></pre>
+                    <div style="padding:16px; background:var(--bg-alt,#f5f5f5); border-radius:6px; margin-top:8px;">
+                        <button id="task3-btn" style="padding:10px 20px; background:#1976D2; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px;">
+                            Load heavy.js on demand
+                        </button>
+                        <p id="task3-output" style="margin-top:8px; font-family:monospace; font-size:14px; color:#333;"></p>
+                    </div>
+                </section>
+
+                <section>
+                    <h3>Bonus: Singleton Cache</h3>
+                    <p><strong>What to do:</strong></p>
+                    <ul>
+                        <li><code>cache.js</code> exports a single shared <code>Map</code> as default</li>
+                        <li><code>userService.js</code> imports <code>cache</code> and writes user objects keyed by <code>user:id</code></li>
+                        <li><code>productService.js</code> imports <code>cache</code> and writes product objects keyed by <code>product:id</code></li>
+                        <li><code>hands-on.js</code> imports <code>cache</code> directly — confirm both services' writes are visible</li>
+                    </ul>
+                    <pre><code>// cache.js
+const cache = new Map();
+export default cache;
+
+// userService.js
+import cache from "./cache.js";
+export function saveUser(id, data) { cache.set(`user:${id}`, data); }
+
+// productService.js
+import cache from "./cache.js";
+export function saveProduct(id, data) { cache.set(`product:${id}`, data); }
+
+// hands-on.js
+import cache from "./cache.js";
+import { saveUser }    from "./userService.js";
+import { saveProduct } from "./productService.js";
+
+saveUser(1, { name: "Priya" });
+saveProduct(42, { name: "Pen" });
+
+console.log([...cache.entries()]);
+// [["user:1", { name:"Priya" }], ["product:42", { name:"Pen" }]]</code></pre>
+                    <pre id="bonus-output" style="background:var(--bg-alt,#f5f5f5); border-radius:6px; padding:12px; font-size:13px; margin-top:8px; white-space:pre-wrap;"></pre>
+                </section>
+
+            </article>
+        </main>
+
+        <aside class="site-outline">
+            <h2>Curriculum</h2>
+            <nav>
+                <ul>
+                    <li><a href="../../index.html">Overview</a></li>
+                    <details><summary>Day 1: Basics</summary><ul><li><a href="../../day-1/html/lesson.html">Lesson</a></li><li><a href="../../day-1/html/hands-on.html">Hands-on</a></li><li><a href="../../day-1/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 2: Variables</summary><ul><li><a href="../../day-2/html/lesson.html">Lesson</a></li><li><a href="../../day-2/html/hands-on.html">Hands-on</a></li><li><a href="../../day-2/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 3: Operators</summary><ul><li><a href="../../day-3/html/lesson.html">Lesson</a></li><li><a href="../../day-3/html/hands-on.html">Hands-on</a></li><li><a href="../../day-3/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 4: Control Flow</summary><ul><li><a href="../../day-4/html/lesson.html">Lesson</a></li><li><a href="../../day-4/html/hands-on.html">Hands-on</a></li><li><a href="../../day-4/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 5: Loops</summary><ul><li><a href="../../day-5/html/lesson.html">Lesson</a></li><li><a href="../../day-5/html/hands-on.html">Hands-on</a></li><li><a href="../../day-5/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 6: Functions</summary><ul><li><a href="../../day-6/html/lesson.html">Lesson</a></li><li><a href="../../day-6/html/hands-on.html">Hands-on</a></li><li><a href="../../day-6/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 7: Arrays</summary><ul><li><a href="../../day-7/html/lesson.html">Lesson</a></li><li><a href="../../day-7/html/hands-on.html">Hands-on</a></li><li><a href="../../day-7/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 8: Objects</summary><ul><li><a href="../../day-8/html/lesson.html">Lesson</a></li><li><a href="../../day-8/html/hands-on.html">Hands-on</a></li><li><a href="../../day-8/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 9: Modern Syntax</summary><ul><li><a href="../../day-9/html/lesson.html">Lesson</a></li><li><a href="../../day-9/html/hands-on.html">Hands-on</a></li><li><a href="../../day-9/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 10: DOM Basics</summary><ul><li><a href="../../day-10/html/lesson.html">Lesson</a></li><li><a href="../../day-10/html/hands-on.html">Hands-on</a></li><li><a href="../../day-10/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 11: Events</summary><ul><li><a href="../../day-11/html/lesson.html">Lesson</a></li><li><a href="../../day-11/html/hands-on.html">Hands-on</a></li><li><a href="../../day-11/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 12: Error Handling</summary><ul><li><a href="../../day-12/html/lesson.html">Lesson</a></li><li><a href="../../day-12/html/hands-on.html">Hands-on</a></li><li><a href="../../day-12/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 13: Hoisting &amp; TDZ</summary><ul><li><a href="../../day-13/html/lesson.html">Lesson</a></li><li><a href="../../day-13/html/hands-on.html">Hands-on</a></li><li><a href="../../day-13/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 14: Scope &amp; Closures</summary><ul><li><a href="../../day-14/html/lesson.html">Lesson</a></li><li><a href="../../day-14/html/hands-on.html">Hands-on</a></li><li><a href="../../day-14/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 15: The this Keyword</summary><ul><li><a href="../../day-15/html/lesson.html">Lesson</a></li><li><a href="../../day-15/html/hands-on.html">Hands-on</a></li><li><a href="../../day-15/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 16: Prototypes &amp; the Prototype Chain</summary><ul><li><a href="../../day-16/html/lesson.html">Lesson</a></li><li><a href="../../day-16/html/hands-on.html">Hands-on</a></li><li><a href="../../day-16/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 17: Classes &amp; OOP</summary><ul><li><a href="../../day-17/html/lesson.html">Lesson</a></li><li><a href="../../day-17/html/hands-on.html">Hands-on</a></li><li><a href="../../day-17/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 18: Promises</summary><ul><li><a href="../../day-18/html/lesson.html">Lesson</a></li><li><a href="../../day-18/html/hands-on.html">Hands-on</a></li><li><a href="../../day-18/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 19: Async / Await</summary><ul><li><a href="../../day-19/html/lesson.html">Lesson</a></li><li><a href="../../day-19/html/hands-on.html">Hands-on</a></li><li><a href="../../day-19/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 20: The Event Loop</summary><ul><li><a href="../../day-20/html/lesson.html">Lesson</a></li><li><a href="../../day-20/html/hands-on.html">Hands-on</a></li><li><a href="../../day-20/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 21: Advanced Array &amp; Object Patterns</summary><ul><li><a href="../../day-21/html/lesson.html">Lesson</a></li><li><a href="../../day-21/html/hands-on.html">Hands-on</a></li><li><a href="../../day-21/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 22: Map / Set / WeakMap / WeakSet</summary><ul><li><a href="../../day-22/html/lesson.html">Lesson</a></li><li><a href="../../day-22/html/hands-on.html">Hands-on</a></li><li><a href="../../day-22/html/homework.html">Homework</a></li></ul></details>
+                    <details><summary>Day 23: Iterators &amp; Generators</summary><ul><li><a href="../../day-23/html/lesson.html">Lesson</a></li><li><a href="../../day-23/html/hands-on.html">Hands-on</a></li><li><a href="../../day-23/html/homework.html">Homework</a></li></ul></details>
+                    <details open>
+                        <summary>Day 24: ES Modules in Depth</summary>
+                        <ul>
+                            <li><a href="lesson.html">Lesson</a></li>
+                            <li><a href="hands-on.html" aria-current="page">Hands-on</a></li>
+                            <li><a href="homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                    <details><summary>Day 25: Functional Programming</summary>
+                        <ul>
+                            <li><a href="../../day-25/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-25/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-25/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary>Day 26: Design Patterns</summary>
+                        <ul>
+                            <li><a href="../../day-26/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-26/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-26/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary>Day 27: Performance & Best Practices</summary>
+                        <ul>
+                            <li><a href="../../day-27/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-27/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-27/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </ul>
+            </nav>
+        </aside>
+    </div>
+    <!-- type="module" enables ES import/export in the browser -->
+    <script type="module" src="../js/hands-on.js"></script>
+</body>
+</html>
